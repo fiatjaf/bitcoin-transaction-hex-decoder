@@ -11,6 +11,12 @@ impl Bytestream {
         };
     }
 
+    // Reads some bytes but do not advance the reader cursor
+    pub fn peek(&mut self, bytes: u64) -> Vec<u8> {
+        let (start, end) = (self.index, self.index + bytes as usize * 2);
+        return hex::decode(self.bytes[start..end].to_string()).unwrap();
+    }
+
     // Consumes x bytes and returns them as a u8 vector
     pub fn get_bytes(&mut self, bytes: u64, convert_endian: bool) -> Vec<u8> {
         let (start, end) = (self.index, self.index + bytes as usize * 2);

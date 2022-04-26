@@ -13,6 +13,13 @@ pub fn decode_from_hex(transaction_hex_string: &str) -> transaction::Content {
     let hash = Sha256::digest(Sha256::digest(hex::decode(transaction_hex_string).unwrap()));
     let txid = bytestream::Bytestream::convert_endian(&hex::encode(hash));
     let version = bytestream::Bytestream::bytes_to_u64(&tx.get_bytes(4, true));
+    let next_byte = tx.peek(1);
+
+    if next_byte[0] == 0 {
+        // it's a segwit marker and the segwit flag
+        tx.get_bytes(2, false); // ignore these bytes
+    }
+
     let no_of_inputs = tx.get_varint();
     let mut inputs = vec![];
     for _ in 0..no_of_inputs {
